@@ -4,6 +4,17 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 
+def autoNorm(dataSet):
+    minVals = dataSet.min(0)
+    maxVlas = dataSet.max(0)
+    ranges = maxVlas - minVals
+    normDataSet = zeros(shape(dataSet))
+    m = dataSet.shape[0]
+    normDataSet = dataSet - tile(minVals, (m,1))
+    normDataSet = normDataSet / tile(ranges, (m,1))
+    return normDataSet, ranges, minVals
+
+
 def file2matrix(filename):
     fr = open(filename)
     # 此处书中为 fr.readline(),根据上下文代码判断，应当为 fr.readlines()函数才正确。
@@ -22,8 +33,11 @@ def file2matrix(filename):
 
 
 datingDataMat, datingLabels = file2matrix('datingTestSet2.txt')
-
+normMat, ranges, minVals = autoNorm(datingDataMat)
+print(normMat)
+print(ranges)
+print(minVals)
 fig = plt.figure()
 ax = fig.add_subplot(111)
-ax.scatter(datingDataMat[:,1], datingDataMat[:,2], 15.0*array(datingLabels), 15.0 * array(datingLabels))
+ax.scatter(datingDataMat[:,0], datingDataMat[:,1], 15.0*array(datingLabels), 15.0 * array(datingLabels))
 plt.show()
