@@ -34,9 +34,6 @@ def file2matrix(filename):
 
 datingDataMat, datingLabels = file2matrix('datingTestSet2.txt')
 normMat, ranges, minVals = autoNorm(datingDataMat)
-print(normMat)
-print(ranges)
-print(minVals)
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.scatter(datingDataMat[:,0], datingDataMat[:,1], 15.0*array(datingLabels), 15.0 * array(datingLabels))
