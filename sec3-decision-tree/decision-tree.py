@@ -69,16 +69,27 @@ def majorityCnt(classList):
 
 def createTree(dataSet, labels):
     classList = [example[-1] for example in dataSet]
+    # 第一个元素的值的数量等于整个列表的长度，即说明整个列表都是这个值，所以该数据集类别全部相同了
     if classList.count(classList[0]) == len(classList):
         return classList[0]
+    # 所有特征已经利用完，只剩下标签列，仍然无法区分剩余样本，则采用“少数服从多数”的方案
     if len(dataSet[0]) == 1:
         return majorityCnt()
+    bestFeat = chooseBestFeatureToSplit(dataSet)
+    bestFeatLabel = labels[bestFeat]
+    myTree = {bestFeatLabel: {}}
+    del(labels[bestFeat])
+    featValues = [example[bestFeat] for example in dataSet]
+    uniqueVals = set(featValues)
+    for value in uniqueVals:
+        subLabels = labels[:]
+        myTree[bestFeatLabel][value] = createTree(splitDataSet(dataSet, bestFeat, value), subLabels)
+    return myTree
 
 
 def main():
     myDat, labels = createDataSet()
-    print(chooseBestFeatureToSplit(myDat))
-    print(myDat)
+    print(createTree(myDat, labels))
 
 
 if __name__ == '__main__':
