@@ -30,7 +30,7 @@ def getNumLeafs(myTree):
     for key in secondDict.keys():
         if type(secondDict[key]).__name__ == 'dict':
             numLeafs += getNumLeafs(secondDict[key])
-        else: 
+        else:
             numLeafs += 1
     return numLeafs
 
@@ -49,4 +49,12 @@ def getTreeDepth(myTree):
     return maxDepth
 
 
-createPlot()
+def retrieveTree(i):
+    listOfTrees = [{'no surfacing': {0: 'no', 1: {'flippers': {0: 'no', 1: 'yes'}}}},
+                   {'no surfacing': {0: 'no', 1: {'flippers': {0: {'head': {0: 'no', 1: 'yes'}}, 1: 'no'}}}}
+                   ]
+    return listOfTrees[i]
+
+
+# createPlot()
+print(retrieveTree(1))
