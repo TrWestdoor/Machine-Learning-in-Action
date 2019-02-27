@@ -25,7 +25,9 @@ def createPlot():
 
 def getNumLeafs(myTree):
     numLeafs = 0
-    firstStr = myTree.keys()[0]
+    # in the py3, type(myTree.keys()) is dict_keys. It can be directed used for iteration, but index is not suitable.
+    # in the py3, type(myTree.keys()) is list.
+    firstStr = list(myTree.keys())[0]
     secondDict = myTree[firstStr]
     for key in secondDict.keys():
         if type(secondDict[key]).__name__ == 'dict':
@@ -37,14 +39,14 @@ def getNumLeafs(myTree):
 
 def getTreeDepth(myTree):
     maxDepth = 0
-    firstStr = myTree.keys()[0]
+    firstStr = list(myTree.keys())[0]
     secondDict = myTree[firstStr]
     for key in secondDict.keys():
         if type(secondDict[key]).__name__ == 'dict':
             thisDepth = 1 + getTreeDepth(secondDict[key])
         else:
             thisDepth = 1
-        if thisDepth < maxDepth:
+        if thisDepth > maxDepth:
             maxDepth = thisDepth
     return maxDepth
 
@@ -59,24 +61,24 @@ def retrieveTree(i):
 def plotMidText(cntrPt, parentPt, txtString):
     xMid = (parentPt[0] - cntrPt[0])/2.0 + cntrPt[0]
     yMid = (parentPt[1] - cntrPt[1])/2.0 + cntrPt[1]
-    createPlot.ax1.text(xMid, yMid, txtString)
+    createPlot.axl.text(xMid, yMid, txtString)
 
 
 def plotTree(myTree, parentPt, nodeTxt):
     numLeafs = getNumLeafs(myTree)
     depth = getTreeDepth(myTree)
-    firstStr = myTree.keys()[0]
+    firstStr = list(myTree.keys())[0]
     cntrPt = (plotTree.xOff + (1.0 + float(numLeafs))/2.0/plotTree.totalW, plotTree.yOff)
     plotMidText(cntrPt, parentPt, nodeTxt)
     plotNode(firstStr, cntrPt, parentPt, decisionNode)
     secondDict = myTree[firstStr]
     plotTree.yOff = plotTree.yOff - 1.0/plotTree.totalD
     for key in secondDict.keys():
-        if type(secondDcit[key]).__name__ == 'dict':
+        if type(secondDict[key]).__name__ == 'dict':
             plotTree(secondDict[key], cntrPt, str(key))
         else:
             plotTree.xOff = plotTree.xOff + 1.0/plotTree.totalW
-            plotNode(secondDcit[key], (plotTree.xOff, plotTree.yOff),cntrPt, leafNode)
+            plotNode(secondDict[key], (plotTree.xOff, plotTree.yOff),cntrPt, leafNode)
             plotMidText((plotTree.xOff, plotTree.yOff), cntrPt, str(key))
     plotTree.yOff = plotTree.yOff + 1.0/plotTree.totalD
 
@@ -94,5 +96,7 @@ def createPlot(inTree):
     plt.show()
 
 
-createPlot()
+myTree = retrieveTree(0)
+myTree['no surfacing'][3] = 'maybe'
+createPlot(myTree)
 
