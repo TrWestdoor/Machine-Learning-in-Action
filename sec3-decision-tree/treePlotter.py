@@ -26,7 +26,7 @@ def createPlot():
 def getNumLeafs(myTree):
     numLeafs = 0
     # in the py3, type(myTree.keys()) is dict_keys. It can be directed used for iteration, but index is not suitable.
-    # in the py3, type(myTree.keys()) is list.
+    # in the py2, type(myTree.keys()) is list.
     firstStr = list(myTree.keys())[0]
     secondDict = myTree[firstStr]
     for key in secondDict.keys():
@@ -96,7 +96,7 @@ def createPlot(inTree):
     plt.show()
 
 
-myTree = retrieveTree(0)
-myTree['no surfacing'][3] = 'maybe'
-createPlot(myTree)
+# myTree = retrieveTree(0)
+# myTree['no surfacing'][3] = 'maybe'
+# createPlot(myTree)
 
