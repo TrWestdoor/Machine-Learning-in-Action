@@ -53,7 +53,29 @@ def trainNB0(trainMatrix, trainCategory):
     return p0Vect, p1Vect, pAbusive
 
 
+def classifyNB(vec2Classify, p0Vec, p1Vec, pClass1):
+    # vec2Classify[0] * p1Vec[0] + vec2..[1] * p1Vec[1] + ...
+    p1 = sum(vec2Classify * p1Vec) + np.log(pClass1)
+    p0 = sum(vec2Classify * p0Vec) + np.log(1.0 - pClass1)
+    if p1 > p0:
+        return 1
+    else:
+        return 0
 
+
+def testingNB():
+    listOPosts, listClasses = loadDataSet()
+    myVocabList = createVocabList(listOPosts)
+    trainMat = []
+    for postinDoc in listOPosts:
+        trainMat.append(setOfWords2Vec(myVocabList, postinDoc))
+    p0V, p1V, pAb = trainNB0(np.array(trainMat), np.array(listClasses))
+    testEntry = ['love', 'my', 'dalmation']
+    thisDoc = np.array(setOfWords2Vec(myVocabList, testEntry))
+    print(testEntry, 'classified as: ', classifyNB(thisDoc, p0V, p1V, pAb))
+    testEntry = ['stupid', 'garbage']
+    thisDoc = np.array(setOfWords2Vec(myVocabList, testEntry))
+    print(testEntry, 'classified as: ', classifyNB(thisDoc, p0V, p1V, pAb))
 
 
 def main():
@@ -61,11 +83,14 @@ def main():
     myVocabList = createVocabList(listOPosts)
     # print(myVocabList)
     # print(setOfWords2Vec(myVocabList, listOPosts[3]))
+    ''' coding4-2 (section 4.5.2)
     trainMat = []
     for postinDoc in listOPosts:
         trainMat.append(setOfWords2Vec(myVocabList, postinDoc))
     p0V, p1V, pAb = trainNB0(trainMat, listClasses)
     print(pAb, '\n', p0V, '\n', p1V)
+    '''
+    testingNB()
 
 
 if __name__ == '__main__':
