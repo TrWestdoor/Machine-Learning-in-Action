@@ -106,10 +106,10 @@ def spamTest():
         fullText.extend(wordList)
         classList.append(0)
     vocabList = createVocabList(docList)
-    trainingSet = range(50)
+    trainingSet = list(range(50))
     testSet = []
     for i in range(10):
-        randIndex = int(random.uniform(0, len(trainingSet)))
+        randIndex = int(np.random.uniform(0, len(trainingSet)))
         testSet.append(trainingSet[randIndex])
         del(trainingSet[randIndex])
     trainMat = []
@@ -121,7 +121,7 @@ def spamTest():
     errorCount = 0
     for docIndex in testSet:
         wordVector = setOfWords2Vec(vocabList, docList[docIndex])
-        if classifyNB(np.array(wordVector), p0V, p1V,pSpam) != classList[docIndex]:
+        if classifyNB(np.array(wordVector), p0V, p1V, pSpam) != classList[docIndex]:
             errorCount += 1
     print('the error rate is : ', float(errorCount) / len(testSet))
 
@@ -138,7 +138,9 @@ def main():
     p0V, p1V, pAb = trainNB0(trainMat, listClasses)
     print(pAb, '\n', p0V, '\n', p1V)
     '''
-    testingNB()
+    # testingNB()
+    for _ in range(10):
+        spamTest()
 
 
 if __name__ == '__main__':
