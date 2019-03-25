@@ -31,6 +31,32 @@ def gradAscent(dataMatIn, classLabels):
     return weights
 
 
+def stocGradAcent0(dataMatrix, classLabels):
+    m, n = np.shape(dataMatrix)
+    alpha = 0.01
+    weights = np.ones(n)
+    for i in range(m):
+        h = sigmoid(sum(dataMatrix[i] * weights))
+        error = classLabels[i] - h
+        weights = weights + alpha * error * dataMatrix[i]
+    return weights
+
+
+def stocGradAscent1(dataMatrix, classLabels, numIter=150):
+    m, n = np.shape(dataMatrix)
+    weights = np.ones(n)
+    for j in range(numIter):
+        dataIndex = list(range(m))
+        for i in range(m):
+            alpha = 4/(1.0+j+i)+0.01
+            randIndex = int(np.random.uniform(0, len(dataIndex)))
+            h = sigmoid(sum(dataMatrix[randIndex]*weights))
+            error = classLabels[randIndex] - h
+            weights = weights + alpha * error * dataMatrix[randIndex]
+            del(dataIndex[randIndex])
+    return weights
+
+
 def plotBestFit(weights):
     dataMat, labelMat = loadDataSet()
     dataArr = np.array(dataMat)
@@ -60,9 +86,18 @@ def plotBestFit(weights):
 
 def main():
     dataArr, labelMat = loadDataSet()
-    # print(gradAscent(dataArr, labelMat))
+    '''5-1
+    print(gradAscent(dataArr, labelMat))
     weights = gradAscent(dataArr, labelMat)
     plotBestFit(weights.getA())
+    '''
+    '''5-2
+    weights = stocGradAcent0(np.array(dataArr), labelMat)
+    plotBestFit(weights)
+    '''
+    # 5-4
+    weights = stocGradAscent1(np.array(dataArr), labelMat)
+    plotBestFit(weights)
 
 
 if __name__ == '__main__':
