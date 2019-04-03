@@ -60,7 +60,11 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter):
             if eta >= 0:
                 print("eta>=0")
                 continue
-            alphas[j] -= labelMat[j]*
+            alphas[j] -= labelMat[j]*(Ei - Ej)/eta
+            alphas[j] = clipAlpha(alphas[j], H, L)
+            if (abs(alphas[j] - alphaJold) < 0.00001):
+                print("j not moving enough")
+                continue
 
 
 def main():
