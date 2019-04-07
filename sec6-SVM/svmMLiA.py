@@ -68,12 +68,31 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter):
             alphas[i] += labelMat[j]*labelMat[i]*(alphaJold - alphas[j])
             b1 = b - Ei - labelMat[i]*(alphas[i] - alphaIold)*dataMatrix[i,:]*dataMatrix[i,:].T - \
                 labelMat[j]*(alphas[j]-alphaJold)*dataMatrix[i,:]*dataMatrix[j,:].T
-            b2 = b - Ej - labelMat[i]*
+            b2 = b - Ej - labelMat[i]*(alphas[i]-alphaIold)*dataMatrix[i,:]*dataMatrix[j,:].T - \
+                labelMat[j]*(alphas[j]-alphaJold)*dataMatrix[j,:]*dataMatrix[j,:].T
+            if (0 < alphas[i]) and (C > alphas[i]): b = b1
+            elif 0 < alphas[j] < C: b = b2
+            else: b = (b1 + b2)/2.0
+            alphaPairsChanged += 1
+            print("iter: %d i:%d, pairs changed %d" % (iter, i, alphaPairsChanged))
+        if alphaPairsChanged == 0:
+            iter += 1
+        else:
+            iter = 0
+        print("iteration number:%d" % iter)
+    return b, alphas
 
 
 def main():
     dataArr, labelArr = loadDataSet('testSet.txt')
-    print(labelArr)
+    # print(labelArr)
+    b, alphas = smoSimple(dataArr, labelArr, 0.6, 0.001, 40)
+    print(b)
+    print(alphas[alphas>0])
+    print(np.shape(alphas[alphas>0]))
+    for i in range(100):
+        if alphas[i]>0.0:
+            print(dataArr[i], labelArr[i])
 
 
 if __name__ == '__main__':
