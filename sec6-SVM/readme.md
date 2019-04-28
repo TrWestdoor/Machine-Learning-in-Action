@@ -1,0 +1,1 @@
+The commit with info: "done Platt SMO", which is the sec6.4 code.
