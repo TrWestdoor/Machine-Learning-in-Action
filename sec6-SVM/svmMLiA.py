@@ -66,7 +66,7 @@ def innerL(i, oS):
             print("eta>=0")
             return 0
         oS.alphas[j] -= oS.labelMat[j]*(Ei - Ej)/eta
-        oS.ahphas[j] = clipAlpha(oS.alphas[j], H, L)
+        oS.alphas[j] = clipAlpha(oS.alphas[j], H, L)
         updataEk(oS, j)
         if (abs(oS.alphas[j] - alphaJold) < 0.00001):
             print("j not moving enough")
@@ -86,6 +86,32 @@ def innerL(i, oS):
         return 1
     else:
         return 0
+
+
+def smoP(dataMatIn, classLabels, C, toler, maxIter, kTup=('lin', 0)):
+    oS = optStruct(np.mat(dataMatIn), np.mat(classLabels).transpose(), C, toler)
+    iter = 0
+    entireSet = True
+    alphaPairsChanged = 0
+    while iter<maxIter and alphaPairsChanged>0 or entireSet:
+        alphaPairsChanged = 0
+        if entireSet:
+            for i in range(oS.m):
+                alphaPairsChanged += innerL(i, oS)
+                print("fullSet, iter: %d i:%d, pairs changed %d" % (iter, i, alphaPairsChanged))
+            iter += 1
+        else:
+            nonBoundIs = np.nonzero((oS.alphas.A > 0) * (oS.alphas.A < C))[0]
+            for i in nonBoundIs:
+                alphaPairsChanged += innerL(i, oS)
+                print("non-bound, iter: %d i:%d, pairs changed %d" % (iter, i, alphaPairsChanged))
+            iter += 1
+        if entireSet:
+            entireSet = False
+        elif alphaPairsChanged == 0:
+            entireSet = True
+        print("iteration number: %d" % iter)
+    return oS.b, oS.alphas
 
 
 def loadDataSet(fileName):
@@ -170,11 +196,21 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter):
     return b, alphas
 
 
+def calcWs(alphas, dataArr, classLabels):
+    X = np.mat(dataArr)
+    labelMat = np.mat(classLabels).transpose()
+    m, n = np.shape(X)
+    w = np.zeros((n, 1))
+    for i in range(m):
+        w += np.multiply(alphas[i] * labelMat[i], X[i,:].T)
+    return w
+
+
 def main():
     dataArr, labelArr = loadDataSet('testSet.txt')
     # print(labelArr)
-    b, alphas = smoSimple(dataArr, labelArr, 0.6, 0.001, 40)
     '''
+    b, alphas = smoSimple(dataArr, labelArr, 0.6, 0.001, 40)
     print(b)
     print(alphas[alphas>0])
     print(np.shape(alphas[alphas>0]))
@@ -182,7 +218,9 @@ def main():
         if alphas[i]>0.0:
             print(dataArr[i], labelArr[i])
     '''
-
+    b, alphas = smoP(dataArr, labelArr, 0.6, 0.001, 40)
+    ws = calcWs(alphas, dataArr, labelArr)
+    print(ws)
 
 
 if __name__ == '__main__':
