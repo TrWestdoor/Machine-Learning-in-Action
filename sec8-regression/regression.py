@@ -36,6 +36,7 @@ def main():
     xMat = np.mat(xArr)
     yMat = np.mat(yArr)
     yHat = xMat * ws
+    '''
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.scatter(xMat[:, 1].flatten().A[0], yMat.T[:, 0].flatten().A[0])
@@ -44,6 +45,8 @@ def main():
     yHat = xCopy * ws
     ax.plot(xCopy[:, 1], yHat)
     plt.show()
+    '''
+    print(np.corrcoef(yHat.T, yMat))
 
 
 if __name__ == '__main__':
