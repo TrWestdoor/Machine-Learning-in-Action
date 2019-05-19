@@ -52,6 +52,10 @@ def lwlrTest(testArr, xArr, yArr, k=1.0):
     return yHat
 
 
+def resError(yArr, yHatArr):
+    return ((yArr - yHatArr) ** 2).sum()
+
+
 
 def main():
     xArr, yArr = loadDataSet('ex0.txt')
@@ -74,6 +78,8 @@ def main():
     plt.show()
     '''
     # print(np.corrcoef(yHat.T, yMat))
+    '''
+    # 8-2
     yHat = lwlrTest(xArr, xArr, yArr, 0.01)
     xMat = np.mat(xArr)
     srtInd = xMat[:, 1].argsort(0)
@@ -83,6 +89,26 @@ def main():
     ax.plot(xSort[:, 1], yHat[srtInd])
     ax.scatter(xMat[:, 1].flatten().A[0], np.mat(yArr).T.flatten().A[0], s=2, c='red')
     plt.show()
+    '''
+    abX, abY = loadDataSet('abalone.txt')
+    yHat01 = lwlrTest(abX[0:99], abX[0:99], abY[0:99], 0.1)
+    yHat1 = lwlrTest(abX[0:99], abX[0:99], abY[0:99], 1)
+    yHat10 = lwlrTest(abX[0:99], abX[0:99], abY[0:99], 10)
+    print('++++++++++++predict train set++++++++++++++')
+    print(resError(abY[0:99], yHat01.T))
+    print(resError(abY[0:99], yHat1.T))
+    print(resError(abY[0:99], yHat10.T))
+    print('++++++++++++predict test set+++++++++++++++')
+    yHat01 = lwlrTest(abX[100:199], abX[0:99], abY[0:99], 0.1)
+    print(resError(abY[100:199], yHat01.T))
+    yHat1 = lwlrTest(abX[100:199], abX[0:99], abY[0:99], 1)
+    print(resError(abY[100:199], yHat1.T))
+    yHat10 = lwlrTest(abX[100:199], abX[0:99], abY[0:99], 10)
+    print(resError(abY[100:199], yHat10.T))
+    print('++++++++++compare simple regression++++++++')
+    ws = standRegres(abX[0:99], abY[0:99])
+    yHat = np.mat(abX[100:199]) * ws
+    print(resError(abY[100:199], yHat.T.A))
 
 
 if __name__ == '__main__':
