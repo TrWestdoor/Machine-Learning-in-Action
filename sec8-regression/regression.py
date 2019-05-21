@@ -56,6 +56,31 @@ def resError(yArr, yHatArr):
     return ((yArr - yHatArr) ** 2).sum()
 
 
+def ridgeRegres(xMat, yMat, lam=0.2):
+    xTx = xMat.T * xMat
+    denom = xTx + np.eye(np.shape(xMat)[1]) * lam
+    if np.linalg.det(denom) == 0.0:
+        print("This matrix is singular, cannot do inverse")
+        return
+    ws = denom.I * (xMat.T * yMat)
+    return ws
+
+
+def ridgeTest(xArr, yArr):
+    xMat = np.mat(xArr)
+    yMat = np.mat(yArr).T
+    yMean = np.mean(yMat, 0)
+    yMat = yMat - yMean
+    xMeans = np.mean(xMat, 0)
+    xVar = np.var(xMat, 0)
+    xMat = (xMat - xMeans) / xVar
+    numTestPts = 30
+    wMat = np.zeros((numTestPts, np.shape(xMat)[1]))
+    for i in range(numTestPts):
+        ws = ridgeRegres(xMat, yMat, np.exp(i-10))
+        wMat[i, :] = ws.T
+    return wMat
+
 
 def main():
     xArr, yArr = loadDataSet('ex0.txt')
@@ -90,6 +115,8 @@ def main():
     ax.scatter(xMat[:, 1].flatten().A[0], np.mat(yArr).T.flatten().A[0], s=2, c='red')
     plt.show()
     '''
+    '''
+    # 8-3, abalone age predict
     abX, abY = loadDataSet('abalone.txt')
     yHat01 = lwlrTest(abX[0:99], abX[0:99], abY[0:99], 0.1)
     yHat1 = lwlrTest(abX[0:99], abX[0:99], abY[0:99], 1)
@@ -109,6 +136,13 @@ def main():
     ws = standRegres(abX[0:99], abY[0:99])
     yHat = np.mat(abX[100:199]) * ws
     print(resError(abY[100:199], yHat.T.A))
+    '''
+    abX, abY = loadDataSet('abalone.txt')
+    ridgeWeights = ridgeTest(abX, abY)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(ridgeWeights)
+    plt.show()
 
 
 if __name__ == '__main__':
