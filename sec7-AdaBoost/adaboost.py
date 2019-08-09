@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 
 def loadSimpData():
-    datMat = np.matrix([[1. , 2.1],
+    datMat = np.array([[1. , 2.1],
                      [2. , 1.1],
                      [1.3, 1. ],
                      [1. , 1. ],
@@ -59,21 +59,24 @@ def adaBoostTrainDS(dataArr, classLables, numIt=40):
     weakClassArr = []
     m = np.shape(dataArr)[0]
     D = np.mat(np.ones((m, 1)) / m)
-    # Record class aggregate value in each data point.
+    # aggClassEst: Record class aggregate value in each data point.
     aggClassEst = np.mat(np.zeros((m, 1)))
     for i in range(numIt):
         bestStump, error, classEst = buildStump(dataArr, classLables, D)
         print("D: ", D.T)
+
         alpha = float(0.5*np.log((1.0 - error) / max(error, 1e-16)))
         bestStump['alhpa'] = alpha
         weakClassArr.append(bestStump)
         print("classEst: ", classEst.T)
+
         # which has some question need to study!!!!!!!!!!!!!! as end to end.
         expon = np.multiply(-1*alpha*np.mat(classLables).T, classEst)
         D = np.multiply(D, np.exp(expon))
         D = D/D.sum()
         aggClassEst += alpha*classEst
         print("aggClassEst: ", aggClassEst.T)
+
         aggErrors = np.multiply(np.sign(aggClassEst) != np.mat(classLables).T, np.ones((m, 1)))
         errorRate = aggErrors.sum() / m
         print("total error: ", errorRate, "\n")
