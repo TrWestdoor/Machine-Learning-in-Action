@@ -40,6 +40,8 @@ def buildStump(dataArr, classLabels, D):
             # Two judge way.
             for inequal in ['lt', 'gt']:
                 threshVal = (rangeMin + float(j) * stepSize)
+
+                # stumpClassify: Return an array which is classify result.
                 predictedVals = stumpClassify(dataMatrix, i, threshVal, inequal)
                 errArr = np.mat(np.ones((m, 1)))
                 errArr[predictedVals == labelMat] = 0
@@ -70,9 +72,11 @@ def adaBoostTrainDS(dataArr, classLables, numIt=40):
         weakClassArr.append(bestStump)
         print("classEst: ", classEst.T)
 
-        # which has some question need to study!!!!!!!!!!!!!! as end to end.
-        expon = np.multiply(-1*alpha*np.mat(classLables).T, classEst)
-        D = np.multiply(D, np.exp(expon))
+        # exp_on: Combine the both of two condition for classify result,
+        # exp_on = - alpha * f(x) * h_t(x)  //f(x) is label, h_t(x) is predict result at D_t distribution.
+        # update D distribution.
+        exp_on = np.multiply(-1*alpha*np.mat(classLables).T, classEst)
+        D = np.multiply(D, np.exp(exp_on))
         D = D/D.sum()
         aggClassEst += alpha*classEst
         print("aggClassEst: ", aggClassEst.T)
@@ -85,6 +89,19 @@ def adaBoostTrainDS(dataArr, classLables, numIt=40):
     return weakClassArr
 
 
+def adaClassify(datToClass, classifierArr):
+    dataMatrix = np.mat(datToClass)
+    m = np.shape(dataMatrix)[0]
+    aggClassEst = np.mat(np.zeros((m, 1)))
+    for i in range(len(classifierArr)):
+        classEst = stumpClassify(dataMatrix, classifierArr[i]['dim'],
+                                 classifierArr[i]['thresh'],
+                                 classifierArr[i]['ineq'])
+        aggClassEst += classifierArr[i]['alpha'] * classEst
+        print(aggClassEst)
+    return np.sign(aggClassEst)
+
+
 def main():
     datMat, classLabels = loadSimpData()
     # In p121
@@ -94,6 +111,10 @@ def main():
 
     # programming 7-2
     classifierArray = adaBoostTrainDS(datMat, classLabels, 9)
+    # print(classifierArray)
+
+    # sec7-5, programming 7-3 example
+
 
 
 if __name__ == '__main__':
