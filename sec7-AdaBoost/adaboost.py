@@ -103,7 +103,11 @@ def adaBoostTrainDS(dataArr, classLables, numIt=40):
         print("total error: ", errorRate, "\n")
         if errorRate == 0.0:
             break
-    return weakClassArr
+    # primary return value:
+    # return weakClassArr
+
+    # For plot ROC curve:
+    return weakClassArr, aggClassEst
 
 
 def adaClassify(datToClass, classifierArr):
@@ -117,6 +121,38 @@ def adaClassify(datToClass, classifierArr):
         aggClassEst += classifierArr[i]['alpha'] * classEst
         # print(aggClassEst)
     return np.sign(aggClassEst)
+
+
+def plotROC(predStrengths, classLabels):
+    cur = (1.0, 1.0)
+    ySUm = 0.0
+    numPosClas = sum(np.array(classLabels) == 1.0)
+    yStep = 1/float(numPosClas)
+    xStep = 1/float(len(classLabels) - numPosClas)
+    sortedIndicies = predStrengths.argsort()
+    fig = plt.figure()
+    fig.clf()
+    ax = plt.subplot(111)
+    for index in sortedIndicies.tolist()[0]:
+        # y_label will decrease yStep when the index-th sample is positive, which means that TP number will
+        # decrease before this index.
+        if classLabels[index] == 1.0:
+            delX = 0
+            delY = yStep
+        # x_label will decrease xStep because a negative sample was found.
+        else:
+            delX = xStep
+            delY = 0
+            ySUm += cur[1]
+        ax.plot([cur[0], cur[0]-delX], [cur[1], cur[1]-delY], c='b')
+        cur = (cur[0]-delX, cur[1]-delY)
+    ax.plot([0, 1], [0, 1], 'b--')
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC curve for AdaBoost Horse Colic Detection System')
+    ax.axis([0, 1, 0, 1])
+    plt.show()
+    print("the Area Under the Curve is: ", ySUm * xStep)
 
 
 def main():
@@ -137,13 +173,18 @@ def main():
     # print("classify result: ", adaClassify([[5, 5], [0, 0]], classifierArr))
 
     # sec7-6, programming 7-4 example
+    # datArr, labelArr = loadDataSet('horseColicTraining2.txt')
+    # classifierArray = adaBoostTrainDS(datArr, labelArr, 10)
+    # testArr, testLabelArr = loadDataSet('horseColicTest2.txt')
+    # prediction10 = adaClassify(testArr, classifierArray)
+    # errArr = np.mat(np.ones((len(testArr), 1)))
+    # err_num = errArr[prediction10 != np.mat(testLabelArr).T].sum()
+    # print("error rate: ", err_num / len(testArr))
+
+    # sec7-7.1, programming 7-5 example
     datArr, labelArr = loadDataSet('horseColicTraining2.txt')
-    classifierArray = adaBoostTrainDS(datArr, labelArr, 10)
-    testArr, testLabelArr = loadDataSet('horseColicTest2.txt')
-    prediction10 = adaClassify(testArr, classifierArray)
-    errArr = np.mat(np.ones((len(testArr), 1)))
-    err_num = errArr[prediction10 != np.mat(testLabelArr).T].sum()
-    print("error rate: ", err_num / len(testArr))
+    classifierArray, aggClassEst = adaBoostTrainDS(datArr, labelArr, 50)
+    plotROC(aggClassEst.T, labelArr)
 
 
 if __name__ == '__main__':
