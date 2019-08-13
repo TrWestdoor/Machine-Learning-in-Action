@@ -2,6 +2,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+# sec7-6, programing sec7-4 code, which is a adaptive load file data function.
+def loadDataSet(fileName):
+    numFeat = len(open(fileName).readline().strip().split('\t'))
+    dataMat = []
+    labelMat = []
+    fr = open(fileName)
+    for line in fr.readlines():
+        lineArr = []
+        curLine = line.strip().split('\t')
+        for i in range(numFeat-1):
+            lineArr.append(float(curLine[i]))
+        dataMat.append(lineArr)
+        labelMat.append(float(curLine[-1]))
+    fr.close()
+    return dataMat, labelMat
+
+
 def loadSimpData():
     datMat = np.array([[1. , 2.1],
                      [2. , 1.1],
@@ -65,12 +82,12 @@ def adaBoostTrainDS(dataArr, classLables, numIt=40):
     aggClassEst = np.mat(np.zeros((m, 1)))
     for i in range(numIt):
         bestStump, error, classEst = buildStump(dataArr, classLables, D)
-        print("D: ", D.T)
+        # print("D: ", D.T)
 
         alpha = float(0.5*np.log((1.0 - error) / max(error, 1e-16)))
-        bestStump['alhpa'] = alpha
+        bestStump['alpha'] = alpha
         weakClassArr.append(bestStump)
-        print("classEst: ", classEst.T)
+        # print("classEst: ", classEst.T)
 
         # exp_on: Combine the both of two condition for classify result,
         # exp_on = - alpha * f(x) * h_t(x)  //f(x) is label, h_t(x) is predict result at D_t distribution.
@@ -79,7 +96,7 @@ def adaBoostTrainDS(dataArr, classLables, numIt=40):
         D = np.multiply(D, np.exp(exp_on))
         D = D/D.sum()
         aggClassEst += alpha*classEst
-        print("aggClassEst: ", aggClassEst.T)
+        # print("aggClassEst: ", aggClassEst.T)
 
         aggErrors = np.multiply(np.sign(aggClassEst) != np.mat(classLables).T, np.ones((m, 1)))
         errorRate = aggErrors.sum() / m
@@ -98,7 +115,7 @@ def adaClassify(datToClass, classifierArr):
                                  classifierArr[i]['thresh'],
                                  classifierArr[i]['ineq'])
         aggClassEst += classifierArr[i]['alpha'] * classEst
-        print(aggClassEst)
+        # print(aggClassEst)
     return np.sign(aggClassEst)
 
 
@@ -110,11 +127,23 @@ def main():
     ###################
 
     # programming 7-2
-    classifierArray = adaBoostTrainDS(datMat, classLabels, 9)
+    # classifierArray = adaBoostTrainDS(datMat, classLabels, 9)
     # print(classifierArray)
 
     # sec7-5, programming 7-3 example
+    # datArr, labelArr = loadSimpData()
+    # classifierArr = adaBoostTrainDS(datArr, labelArr, 30)
+    # print("classify result: ", adaClassify([0, 0], classifierArr))
+    # print("classify result: ", adaClassify([[5, 5], [0, 0]], classifierArr))
 
+    # sec7-6, programming 7-4 example
+    datArr, labelArr = loadDataSet('horseColicTraining2.txt')
+    classifierArray = adaBoostTrainDS(datArr, labelArr, 10)
+    testArr, testLabelArr = loadDataSet('horseColicTest2.txt')
+    prediction10 = adaClassify(testArr, classifierArray)
+    errArr = np.mat(np.ones((len(testArr), 1)))
+    err_num = errArr[prediction10 != np.mat(testLabelArr).T].sum()
+    print("error rate: ", err_num / len(testArr))
 
 
 if __name__ == '__main__':
