@@ -14,6 +14,7 @@ def loadDataSet(fileName):
             lineArr.append(float(curLine[i]))
         dataMat.append(lineArr)
         labelMat.append(float(curLine[-1]))
+    fr.close()
     return dataMat, labelMat
 
 
@@ -115,6 +116,7 @@ def main():
     ax.scatter(xMat[:, 1].flatten().A[0], np.mat(yArr).T.flatten().A[0], s=2, c='red')
     plt.show()
     '''
+
     '''
     # 8-3, abalone age predict
     abX, abY = loadDataSet('abalone.txt')
@@ -137,6 +139,7 @@ def main():
     yHat = np.mat(abX[100:199]) * ws
     print(resError(abY[100:199], yHat.T.A))
     '''
+
     abX, abY = loadDataSet('abalone.txt')
     ridgeWeights = ridgeTest(abX, abY)
     fig = plt.figure()
