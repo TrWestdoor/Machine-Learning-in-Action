@@ -83,6 +83,49 @@ def ridgeTest(xArr, yArr):
     return wMat
 
 
+def regularize(x_mat):
+    xMeans = np.mean(x_mat, 0)
+    xVar = np.var(x_mat, 0)
+    return (x_mat - xMeans) / xVar
+
+
+def stageWise(xArr, yArr, eps=0.01, numIt=100):
+    """
+    This part code is different with book, cause primary code can't directly run.
+    So i fix some error content.
+    """
+    xMat = np.mat(xArr)
+    yMat = np.mat(yArr).T
+    yMean = np.mean(yMat, 0)
+    yMat = yMat - yMean
+
+    # xMat = np.regularize(xMat)
+    xMeans = np.mean(xMat, 0)
+    xVar = np.var(xMat, 0)
+    xMat = (xMat - xMeans) / xVar
+
+    m, n = np.shape(xMat)
+    returnMat = np.zeros((numIt, n))
+    ws = np.zeros((n, 1))
+    wsTest = ws.copy()
+    wsMax = ws.copy()
+    for i in range(numIt):
+        print(ws.T)
+        lowerError = np.inf
+        for j in range(n):
+            for sign in [-1, 1]:
+                wsTest = ws.copy()
+                wsTest[j] += eps * sign
+                yTest = xMat * wsTest
+                rssE = resError(yMat.A, yTest.A)
+                if rssE < lowerError:
+                    lowerError = rssE
+                    wsMax = wsTest
+        ws = wsMax.copy()
+        returnMat[i, :] = ws.T
+    return returnMat
+
+
 def main():
     xArr, yArr = loadDataSet('ex0.txt')
     # print(xArr[0:2])
@@ -140,12 +183,23 @@ def main():
     print(resError(abY[100:199], yHat.T.A))
     '''
 
-    abX, abY = loadDataSet('abalone.txt')
-    ridgeWeights = ridgeTest(abX, abY)
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.plot(ridgeWeights)
-    plt.show()
+    # abX, abY = loadDataSet('abalone.txt')
+    # ridgeWeights = ridgeTest(abX, abY)
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111)
+    # ax.plot(ridgeWeights)
+    # plt.show()
+
+    # 8.4.3
+    xArr, yArr = loadDataSet('abalone.txt')
+    # print(stageWise(xArr, yArr, 0.001, 5000))
+    xMat = np.mat(xArr)
+    yMat = np.mat(yArr).T
+    xMat = regularize(xMat)
+    yM = np.mean(yMat, 0)
+    yMat = yMat - yM
+    weights = standRegres(xMat, yMat.T)
+    print(weights)
 
 
 if __name__ == '__main__':
