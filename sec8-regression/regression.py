@@ -191,15 +191,18 @@ def main():
     # plt.show()
 
     # 8.4.3
-    xArr, yArr = loadDataSet('abalone.txt')
-    # print(stageWise(xArr, yArr, 0.001, 5000))
-    xMat = np.mat(xArr)
-    yMat = np.mat(yArr).T
-    xMat = regularize(xMat)
-    yM = np.mean(yMat, 0)
-    yMat = yMat - yM
-    weights = standRegres(xMat, yMat.T)
-    print(weights)
+    # xArr, yArr = loadDataSet('abalone.txt')
+    # # print(stageWise(xArr, yArr, 0.001, 5000))
+    # xMat = np.mat(xArr)
+    # yMat = np.mat(yArr).T
+    # xMat = regularize(xMat)
+    # yM = np.mean(yMat, 0)
+    # yMat = yMat - yM
+    # weights = standRegres(xMat, yMat.T)
+    # print(weights)
+
+    # 8.6
+
 
 
 if __name__ == '__main__':
