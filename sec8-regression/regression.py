@@ -126,16 +126,55 @@ def stageWise(xArr, yArr, eps=0.01, numIt=100):
     return returnMat
 
 
+from time import sleep
+import json
+from urllib.request import urlopen
+
+
+def search_for_set(retX, retY, setNum, yr, numPce, origPrc):
+    sleep(10)
+    myAPIstr = 'get from code.google.com'
+    searchURL = 'https://www.googleapis.com/shopping/search/v1/public/products?key=%s&country=US&q=lego+%d' \
+                '&alt=json' % (myAPIstr, setNum)
+    pg = urlopen(searchURL)
+    retDict = json.loads(pg.read())
+    for i in range(len(retDict['items'])):
+        try:
+            currItem = retDict['items'][i]
+            if currItem['product']['condition'] == 'new':
+                newFlag = 1
+            else:
+                newFlag = 0
+            listOfInv = currItem['product']['inventories']
+            for item in listOfInv:
+                sellingPrice = item['price']
+                if sellingPrice > origPrc * 0.5:
+                    print("%d\t%d\t%d\t%f\t%f" % (yr, numPce, newFlag, origPrc, sellingPrice))
+                    retX.append([yr, numPce, newFlag, sellingPrice])
+                    retY.append(sellingPrice)
+        except:
+            print("problem with item %d" % i)
+
+
+def setDataCollect(retX, retY):
+    search_for_set(retX, retY, 8288, 2006, 800, 49.99)
+    # search_for_set(retX, retY, 10030, 2002, 3096, 269.99)
+    # search_for_set(retX, retY, 10179, 2007, 5195, 499.99)
+    # search_for_set(retX, retY, 10181, 2007, 3428, 199.99)
+    # search_for_set(retX, retY, 10189, 2008, 5922, 299.99)
+    # search_for_set(retX, retY, 10196, 2009, 3263, 249.99)
+
+
 def main():
-    xArr, yArr = loadDataSet('ex0.txt')
+    # xArr, yArr = loadDataSet('ex0.txt')
     # print(xArr[0:2])
-    '''
-    ws = standRegres(xArr, yArr)
-    # print(ws)
-    xMat = np.mat(xArr)
-    yMat = np.mat(yArr)
-    yHat = xMat * ws
-    '''
+
+    # ws = standRegres(xArr, yArr)
+    # # print(ws)
+    # xMat = np.mat(xArr)
+    # yMat = np.mat(yArr)
+    # yHat = xMat * ws
+
     '''
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -202,7 +241,13 @@ def main():
     # print(weights)
 
     # 8.6
-
+    # Because given website address has been down, so these code cannot run successfully.
+    # We will try found new address and fix these code.
+    # 原网址已经关闭，我会尝试找到原来的数据修改代码，或者寻找谷歌放置此API的新网址并修正代码。
+    # lgX = []
+    # lgY = []
+    # setDataCollect(lgX, lgY)
+    # print(lgX)
 
 
 if __name__ == '__main__':
