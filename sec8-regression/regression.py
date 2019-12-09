@@ -133,7 +133,7 @@ from urllib.request import urlopen
 
 def search_for_set(retX, retY, setNum, yr, numPce, origPrc):
     sleep(10)
-    myAPIstr = 'get from code.google.com'
+    myAPIstr = 'AIzaSyD2cR2KFyx12hXu6PFU-wrWot3NXvko8vY'
     searchURL = 'https://www.googleapis.com/shopping/search/v1/public/products?key=%s&country=US&q=lego+%d' \
                 '&alt=json' % (myAPIstr, setNum)
     pg = urlopen(searchURL)
@@ -244,10 +244,10 @@ def main():
     # Because given website address has been down, so these code cannot run successfully.
     # We will try found new address and fix these code.
     # 原网址已经关闭，我会尝试找到原来的数据修改代码，或者寻找谷歌放置此API的新网址并修正代码。
-    # lgX = []
-    # lgY = []
-    # setDataCollect(lgX, lgY)
-    # print(lgX)
+    lgX = []
+    lgY = []
+    setDataCollect(lgX, lgY)
+    print(lgX)
 
 
 if __name__ == '__main__':
